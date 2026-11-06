@@ -80,7 +80,7 @@ CREATE TABLE `Add` (
 CREATE TABLE Contribute (
     artist_id INT,
     song_id INT,
-    `role` VARCHAR(50) NOT NULL DEFAULT 'Primary Artist',
+    role VARCHAR(50) NOT NULL DEFAULT 'Primary Artist',
     PRIMARY KEY (artist_id, song_id),
     FOREIGN KEY (artist_id) REFERENCES Artist(artist_id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES Song(song_id) ON DELETE CASCADE
