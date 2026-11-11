@@ -8,6 +8,7 @@ import PlaylistFormDialog from './components/PlaylistFormDialog.jsx'
 import DeletePlaylistDialog from './components/DeletePlaylistDialog.jsx'
 import AddSongsDialog from './components/AddSongsDialog.jsx'
 import { demoPlaylists, demoUser } from './data/demoPlaylists.js'
+import { demoLikes } from './data/demoLikes.js'
 import { catalogSongs } from './data/mockCatalog.js'
 
 export default function App() {
@@ -15,6 +16,8 @@ export default function App() {
   const [playlists, setPlaylists] = useState(demoPlaylists)
   const [dialog, setDialog] = useState(null)
   const [notice, setNotice] = useState('')
+  const [likedSongIds, setLikedSongIds] = useState(() => new Set(demoLikes.filter(like => like.userId === demoUser.id).map(like => like.songId)))
+  const [undo, setUndo] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArtistId, setSelectedArtistId] = useState(null)
   const nextId = useRef(Math.max(...demoPlaylists.map(playlist => playlist.id)) + 1)
@@ -26,6 +29,7 @@ export default function App() {
     if (view === 'create') { setDialog({ type: 'create' }); return }
     if (view === 'playlist' && !ownPlaylists.some(playlist => playlist.id === playlistId)) return
     setNotice('')
+    setUndo(null)
     setLocation({ view, playlistId })
   }
   function savePlaylist(title) {
@@ -59,16 +63,35 @@ export default function App() {
     setNotice('Song removed from playlist.')
   }
 
-  let page = <HomePage playlists={ownPlaylists} onAddSong={addSong} />
-  if (location.view === 'search') page = <SearchPage query={searchQuery} setQuery={setSearchQuery} selectedArtistId={selectedArtistId} setSelectedArtistId={setSelectedArtistId} playlists={ownPlaylists} onAddSong={addSong} />
-  if (location.view === 'liked') page = <LikedSongsPage />
-  if (location.view === 'playlist' && selectedPlaylist) page = <PlaylistPage playlist={selectedPlaylist} playlists={ownPlaylists} owner={demoUser.username} onAddSong={addSong} onRemoveSong={removeSong} openDialog={(type, playlistId) => setDialog({ type, playlistId })} />
+  function toggleLike(songId) {
+    if (!catalogSongs.some(song => song.id === songId)) return
+    const wasLiked = likedSongIds.has(songId)
+    setLikedSongIds(current => {
+      const next = new Set(current)
+      if (next.has(songId)) next.delete(songId)
+      else next.add(songId)
+      return next
+    })
+    setNotice('')
+    setUndo(wasLiked && location.view === 'liked' ? { songId } : null)
+  }
+  function undoUnlike() {
+    if (!undo) return
+    setLikedSongIds(current => new Set(current).add(undo.songId))
+    setUndo(null)
+  }
+
+  let page = <HomePage playlists={ownPlaylists} onAddSong={addSong} likedSongIds={likedSongIds} onToggleLike={toggleLike} />
+  if (location.view === 'search') page = <SearchPage query={searchQuery} setQuery={setSearchQuery} selectedArtistId={selectedArtistId} setSelectedArtistId={setSelectedArtistId} playlists={ownPlaylists} onAddSong={addSong} likedSongIds={likedSongIds} onToggleLike={toggleLike} />
+  if (location.view === 'liked') page = <LikedSongsPage likedSongIds={likedSongIds} onToggleLike={toggleLike} playlists={ownPlaylists} onAddSong={addSong} onFindSongs={() => navigate('search')} user={demoUser} />
+  if (location.view === 'playlist' && selectedPlaylist) page = <PlaylistPage playlist={selectedPlaylist} playlists={ownPlaylists} owner={demoUser.username} onAddSong={addSong} onRemoveSong={removeSong} openDialog={(type, playlistId) => setDialog({ type, playlistId })} likedSongIds={likedSongIds} onToggleLike={toggleLike} />
 
   return <div className="app-shell">
     <Sidebar view={location.view} playlistId={location.playlistId} playlists={ownPlaylists} navigate={navigate} />
     <main className="main-content" id="main-content">
       <header className="topbar"><span className="topbar-label">Spotify Mini</span><span className="demo-user"><span className="user-avatar" aria-hidden="true">A</span>{demoUser.username}<span className="demo-badge">DEMO</span></span></header>
       {notice && <div className="notice" role="status">{notice}<button type="button" onClick={() => setNotice('')} aria-label="Dismiss notice">×</button></div>}
+      {location.view === 'liked' && undo && <div className="notice undo-notice" role="status"><span>Removed from Liked Songs.</span><button type="button" className="undo-button" onClick={undoUnlike}>Undo</button></div>}
       {page}
     </main>
     {(dialog?.type === 'create' || dialog?.type === 'rename' && dialogPlaylist) && <PlaylistFormDialog key={`${dialog.type}-${dialog.playlistId ?? 'new'}`} playlist={dialog.type === 'rename' ? dialogPlaylist : null} onSave={savePlaylist} onClose={() => setDialog(null)} />}

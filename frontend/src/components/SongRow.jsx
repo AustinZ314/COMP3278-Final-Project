@@ -6,7 +6,7 @@ export function formatDuration(seconds) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
 
-export default function SongRow({ song, index, playlists = [], onAddSong, onRemoveSong, currentPlaylistId }) {
+export default function SongRow({ song, index, playlists = [], onAddSong, onRemoveSong, currentPlaylistId, isLiked = false, onToggleLike }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function SongRow({ song, index, playlists = [], onAddSong, onRemo
     <Artwork id={song.id} label={song.title} />
     <div className="song-primary"><strong title={song.title}>{song.title}</strong><span title={artistNames}>{artistNames}</span></div>
     <span className="song-album" title={song.albums.map(album => album.title).join(', ')}>{song.albums.map(album => album.title).join(', ') || '—'}</span>
-    <div className="song-actions"><button type="button" disabled title="Likes are coming in a later phase" aria-label={`Like ${song.title} (coming later)`}>♡</button>
+    <div className="song-actions"><button type="button" className={`row-like-button${isLiked ? ' is-liked' : ''}`} onClick={() => onToggleLike(song.id)} aria-label={`${isLiked ? 'Unlike' : 'Like'} ${song.title}`} aria-pressed={isLiked} title={isLiked ? 'Unlike song' : 'Like song'}>{isLiked ? '♥' : '♡'}</button>
       <div className="playlist-menu-anchor" ref={menuRef}><button type="button" className="row-add-button" onClick={() => setMenuOpen(open => !open)} aria-label={`Add ${song.title} to playlist`} aria-expanded={menuOpen} aria-haspopup="true">＋</button>
         {menuOpen && <div className="playlist-menu"><p>Add to playlist</p>{playlists.length ? playlists.map(playlist => { const added = playlist.songIds.includes(song.id); return <button type="button" key={playlist.id} disabled={added} onClick={() => { onAddSong(song.id, playlist.id); setMenuOpen(false) }}>{playlist.title}<span>{added ? 'Added' : '+'}</span></button> }) : <span className="menu-empty">Create a playlist first.</span>}</div>}
       </div>
