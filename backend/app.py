@@ -85,6 +85,120 @@ def get_playlist_songs(playlist_id):
     finally:
         connection.close()
 
+@app.get("/api/users/<int:user_id>/likes")
+def get_user_likes(user_id):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    s.song_id,
+                    s.title,
+                    s.duration_seconds
+                FROM `Like` AS l
+                JOIN Song AS s
+                    ON l.song_id = s.song_id
+                WHERE l.user_id = %s
+                ORDER BY s.song_id
+            """, (user_id,))
+
+            songs = cursor.fetchall()
+
+        return jsonify(songs)
+    finally:
+        connection.close()
+
+@app.post("/api/users/<int:user_id>/likes")
+def like_song(user_id):
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required"}), 400
+
+    song_id = data.get("song_id")
+
+    if type(song_id) is not int or song_id <= 0:
+        return jsonify({"error": "A valid song_id is required"}), 400
+
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT user_id FROM User WHERE user_id = %s",
+                (user_id,)
+            )
+
+            if cursor.fetchone() is None:
+                return jsonify({"error": "User not found"}), 404
+
+            cursor.execute(
+                "SELECT song_id FROM Song WHERE song_id = %s",
+                (song_id,)
+            )
+
+            if cursor.fetchone() is None:
+                return jsonify({"error": "Song not found"}), 404
+
+            cursor.execute("""
+                SELECT song_id
+                FROM `Like`
+                WHERE user_id = %s AND song_id = %s
+            """, (user_id, song_id))
+
+            if cursor.fetchone() is not None:
+                return jsonify({"error": "Song already liked"}), 409
+
+            cursor.execute("""
+                INSERT INTO `Like` (user_id, song_id)
+                VALUES (%s, %s)
+            """, (user_id, song_id))
+
+            cursor.execute("""
+                UPDATE Song
+                SET like_count = like_count + 1
+                WHERE song_id = %s
+            """, (song_id,))
+
+        connection.commit()
+
+        return jsonify({
+            "user_id": user_id,
+            "song_id": song_id
+        }), 201
+    finally:
+        connection.close()
+
+@app.delete("/api/users/<int:user_id>/likes/<int:song_id>")
+def unlike_song(user_id, song_id):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                DELETE FROM `Like`
+                WHERE user_id = %s AND song_id = %s
+            """, (user_id, song_id))
+
+            deleted_rows = cursor.rowcount
+
+            if deleted_rows == 0:
+                return jsonify({"error": "Song not liked"}), 404
+
+            cursor.execute("""
+                UPDATE Song
+                SET like_count = GREATEST(like_count - 1, 0)
+                WHERE song_id = %s
+            """, (song_id,))
+
+        connection.commit()
+
+        return "", 204
+    finally:
+        connection.close()
+
+
 @app.post("/api/playlists/<int:playlist_id>/songs")
 def add_playlist_song(playlist_id):
     data = request.get_json(silent=True)
