@@ -102,6 +102,29 @@ def get_songs():
     finally:
         connection.close()
 
+@app.get("/api/artists")
+def get_artists():
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    artist_id AS id,
+                    name,
+                    bio,
+                    country
+                FROM Artist
+                ORDER BY artist_id
+            """)
+
+            artists = cursor.fetchall()
+
+        return jsonify(artists)
+    finally:
+        connection.close()
+
+
 
 @app.get("/api/users/<int:user_id>/playlists")
 def get_user_playlists(user_id):
