@@ -43,6 +43,7 @@ def get_songs():
     finally:
         connection.close()
 
+
 @app.get("/api/users/<int:user_id>/playlists")
 def get_user_playlists(user_id):
     connection = get_connection()
@@ -50,16 +51,44 @@ def get_user_playlists(user_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT playlist_id, title, is_public
-                FROM Playlist
-                WHERE user_id = %s
-                ORDER BY playlist_id
+                SELECT
+                    p.playlist_id,
+                    p.title,
+                    p.is_public,
+                    p.creation_date,
+                    p.user_id,
+                    a.song_id
+                FROM Playlist AS p
+                LEFT JOIN `Add` AS a
+                    ON p.playlist_id = a.playlist_id
+                WHERE p.user_id = %s
+                ORDER BY p.playlist_id, a.song_id
             """, (user_id,))
-            playlists = cursor.fetchall()
 
-        return jsonify(playlists)
+            rows = cursor.fetchall()
+
+        playlists = {}
+
+        for row in rows:
+            playlist_id = row["playlist_id"]
+
+            if playlist_id not in playlists:
+                playlists[playlist_id] = {
+                    "playlist_id": playlist_id,
+                    "title": row["title"],
+                    "is_public": bool(row["is_public"]),
+                    "creation_date": row["creation_date"].isoformat(),
+                    "user_id": row["user_id"],
+                    "song_ids": []
+                }
+
+            if row["song_id"] is not None:
+                playlists[playlist_id]["song_ids"].append(row["song_id"])
+
+        return jsonify(list(playlists.values()))
     finally:
         connection.close()
+
 
 @app.get("/api/playlists/<int:playlist_id>/songs")
 def get_playlist_songs(playlist_id):
