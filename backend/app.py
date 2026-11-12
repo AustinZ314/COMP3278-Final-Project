@@ -61,6 +61,108 @@ def get_user_playlists(user_id):
     finally:
         connection.close()
 
+@app.get("/api/playlists/<int:playlist_id>/songs")
+def get_playlist_songs(playlist_id):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    s.song_id,
+                    s.title,
+                    s.duration_seconds
+                FROM `Add` AS a
+                JOIN Song AS s
+                    ON a.song_id = s.song_id
+                WHERE a.playlist_id = %s
+                ORDER BY s.song_id
+            """, (playlist_id,))
+
+            songs = cursor.fetchall()
+
+        return jsonify(songs)
+    finally:
+        connection.close()
+
+@app.post("/api/playlists/<int:playlist_id>/songs")
+def add_playlist_song(playlist_id):
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required"}), 400
+
+    song_id = data.get("song_id")
+
+    if type(song_id) is not int or song_id <= 0:
+        return jsonify({"error": "A valid song_id is required"}), 400
+
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT playlist_id FROM Playlist WHERE playlist_id = %s",
+                (playlist_id,)
+            )
+
+            if cursor.fetchone() is None:
+                return jsonify({"error": "Playlist not found"}), 404
+
+            cursor.execute(
+                "SELECT song_id FROM Song WHERE song_id = %s",
+                (song_id,)
+            )
+
+            if cursor.fetchone() is None:
+                return jsonify({"error": "Song not found"}), 404
+
+            cursor.execute("""
+                SELECT song_id
+                FROM `Add`
+                WHERE playlist_id = %s AND song_id = %s
+            """, (playlist_id, song_id))
+
+            if cursor.fetchone() is not None:
+                return jsonify({"error": "Song already in playlist"}), 409
+
+            cursor.execute("""
+                INSERT INTO `Add` (song_id, playlist_id)
+                VALUES (%s, %s)
+            """, (song_id, playlist_id))
+
+        connection.commit()
+
+        return jsonify({
+            "playlist_id": playlist_id,
+            "song_id": song_id
+        }), 201
+    finally:
+        connection.close()
+
+@app.delete("/api/playlists/<int:playlist_id>/songs/<int:song_id>")
+def remove_playlist_song(playlist_id, song_id):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                DELETE FROM `Add`
+                WHERE playlist_id = %s AND song_id = %s
+            """, (playlist_id, song_id))
+
+            deleted_rows = cursor.rowcount
+
+        if deleted_rows == 0:
+            return jsonify({"error": "Song not found in playlist"}), 404
+
+        connection.commit()
+
+        return "", 204
+    finally:
+        connection.close()
+
+
 @app.post("/api/users/<int:user_id>/playlists")
 def create_playlist(user_id):
     data = request.get_json(silent=True)
