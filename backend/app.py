@@ -17,6 +17,7 @@ def count_songs():
     finally:
         connection.close()
 
+
 @app.get("/api/songs")
 def get_songs():
     connection = get_connection()
@@ -28,18 +29,76 @@ def get_songs():
                     s.song_id,
                     s.title,
                     s.duration_seconds,
-                    a.name AS artist_name
-                FROM Song s
+                    s.release_date,
+                    a.artist_id,
+                    a.name AS artist_name,
+                    a.bio AS artist_bio,
+                    a.country AS artist_country,
+                    c.role
+                FROM Song AS s
                 LEFT JOIN Contribute AS c
                     ON s.song_id = c.song_id
-                    AND c.role = 'Primary Artist'
                 LEFT JOIN Artist AS a
                     ON c.artist_id = a.artist_id
-                ORDER BY s.song_id
+                ORDER BY s.song_id, a.artist_id
             """)
-            songs = cursor.fetchall()
 
-        return jsonify(songs)
+            rows = cursor.fetchall()
+            cursor.execute("""
+                SELECT
+                    c.song_id,
+                    a.album_id,
+                    a.title AS album_title,
+                    a.release_date AS album_release_date,
+                    a.artist_id
+                FROM Contain AS c
+                JOIN Album AS a
+                    ON c.album_id = a.album_id
+                ORDER BY c.song_id, a.album_id
+            """)
+
+            album_rows = cursor.fetchall()
+
+
+        songs = {}
+
+        for row in rows:
+            song_id = row["song_id"]
+
+            if song_id not in songs:
+                songs[song_id] = {
+                    "song_id": song_id,
+                    "title": row["title"],
+                    "duration_seconds": row["duration_seconds"],
+                    "release_date": row["release_date"].isoformat(),
+                    "artist_name": None,
+                    "artists": [],
+                    "albums": []
+                }
+
+            if row["artist_id"] is not None:
+                songs[song_id]["artists"].append({
+                    "id": row["artist_id"],
+                    "name": row["artist_name"],
+                    "bio": row["artist_bio"],
+                    "country": row["artist_country"]
+                })
+
+                if row["role"] == "Primary Artist":
+                    songs[song_id]["artist_name"] = row["artist_name"]
+
+        for row in album_rows:
+            song = songs[row["song_id"]]
+
+            song["albums"].append({
+                "id": row["album_id"],
+                "title": row["album_title"],
+                "releaseDate": row["album_release_date"].isoformat(),
+                "artistId": row["artist_id"]
+            })
+
+
+        return jsonify(list(songs.values()))
     finally:
         connection.close()
 
