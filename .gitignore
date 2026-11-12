@@ -1,0 +1,7 @@
+backend/.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+.DS_Store
+!backend/.env.example
