@@ -26,33 +26,45 @@ Enter the MySQL password when prompted.
 
 _2. Insert Sample Data_
 
+```bash
 /usr/local/mysql/bin/mysql -u root -p music_streaming_db < insert_sample_data.sql
+```
 
 After successful execution, the database music_streaming_db and its sample data will be created.
 
 _3. Verify Database Creation (Optional)_
 
+```bash
 /usr/local/mysql/bin/mysql -u root -p
+```
 
 Inside MySQL:
 
+```bash
 SHOW DATABASES;
 USE music_streaming_db;
 SHOW TABLES;
+```
 
 **Backend Setup**
 
 _1. Create a Virtual Environment_
 
+```bash
 python3 -m venv backend/.venv
+```
 
 _2. Activate the Virtual Environment_
 
+```bash
 source backend/.venv/bin/activate
+```
 
 _3. Install Required Packages_
 
+```bash
 pip install -r backend/requirements.txt
+```
 
 _4. Configure Environment Variables_
 
@@ -60,21 +72,27 @@ Create a file named .env inside the backend folder.
 
 Example configuration:
 
+```bash
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_NAME=music_streaming_db
 DB_USER=root
 DB_PASSWORD=YOUR_PASSWORD
+```
 
 Replace YOUR_PASSWORD with your MySQL password.
 
 _5. Test Database Connection_
 
+```bash
 python backend/test_connection.py
+```
 
 _6. Start the Backend Server_
 
+```bash
 python backend/app.py
+```
 
 The Flask API will run at:
 
@@ -86,15 +104,21 @@ Keep this terminal running.
 
 Open a new terminal and navigate to the frontend directory:
 
+```bash
 cd frontend
+```
 
 Install dependencies:
 
+```bash
 npm install
+```
 
 Start the development server:
 
+```bash
 npm run dev
+```
 
 The frontend will be available at:
 
@@ -108,12 +132,16 @@ To use the application:
 
 2. Start the Flask backend:
 
+```bash
 python backend/app.py
+```
 
 3. Start the React frontend:
 
+```bash
 cd frontend
 npm run dev
+```
 
 4. Open:
 
