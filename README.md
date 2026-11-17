@@ -18,7 +18,9 @@ _1. Create the Database_
 
 From the project root directory, run:
 
+```bash
 /usr/local/mysql/bin/mysql -u root -p < create_database.sql
+```
  
 Enter the MySQL password when prompted.
 
