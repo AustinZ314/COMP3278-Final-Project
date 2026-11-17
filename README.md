@@ -149,10 +149,16 @@ http://127.0.0.1:5173
 
 **Features**
 
-Browse music catalog
-Search songs and artists
-Like and unlike songs
-Create playlists
-Add songs to playlists
-View personal music library
-Store user interactions in MySQL
+1. Browse music catalog
+
+2. Search songs and artists
+
+3. Like and unlike songs
+
+4. Create playlists
+
+5. Add songs to playlists
+
+6. View personal music library
+
+7. Store user interactions in MySQL
