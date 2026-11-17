@@ -159,6 +159,4 @@ http://127.0.0.1:5173
 
 5. Add songs to playlists
 
-6. View personal music library
-
-7. Store user interactions in MySQL
+6. Store user interactions in MySQL
