@@ -1,10 +1,10 @@
 # COMP3278-Final-Project
 
-**Spotify Mini**
+## **Spotify Mini**
 
 A Spotify-inspired music library web application built using React (Vite), Flask, and MySQL. The application allows users to browse songs, search music, like songs, create playlists, and manage their music library.
 
-**Prerequisites**
+## **Prerequisites**
 
 Before running the project, ensure the following software is installed:
 
@@ -12,9 +12,9 @@ MySQL 8.0+
 Python 3
 Node.js and npm
 
-**Database Setup**
+## **Database Setup**
 
-_1. Create the Database_
+### _1. Create the Database_
 
 From the project root directory, run:
 
@@ -24,7 +24,7 @@ From the project root directory, run:
  
 Enter the MySQL password when prompted.
 
-_2. Insert Sample Data_
+### _2. Insert Sample Data_
 
 ```bash
 /usr/local/mysql/bin/mysql -u root -p music_streaming_db < insert_sample_data.sql
@@ -32,7 +32,7 @@ _2. Insert Sample Data_
 
 After successful execution, the database music_streaming_db and its sample data will be created.
 
-_3. Verify Database Creation (Optional)_
+### _3. Verify Database Creation (Optional)_
 
 ```bash
 /usr/local/mysql/bin/mysql -u root -p
@@ -46,27 +46,27 @@ USE music_streaming_db;
 SHOW TABLES;
 ```
 
-**Backend Setup**
+## **Backend Setup**
 
-_1. Create a Virtual Environment_
+### _1. Create a Virtual Environment_
 
 ```bash
 python3 -m venv backend/.venv
 ```
 
-_2. Activate the Virtual Environment_
+### _2. Activate the Virtual Environment_
 
 ```bash
 source backend/.venv/bin/activate
 ```
 
-_3. Install Required Packages_
+### _3. Install Required Packages_
 
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-_4. Configure Environment Variables_
+### _4. Configure Environment Variables_
 
 Create a file named .env inside the backend folder.
 
@@ -82,13 +82,13 @@ DB_PASSWORD=YOUR_PASSWORD
 
 Replace YOUR_PASSWORD with your MySQL password.
 
-_5. Test Database Connection_
+### _5. Test Database Connection_
 
 ```bash
 python backend/test_connection.py
 ```
 
-_6. Start the Backend Server_
+### _6. Start the Backend Server_
 
 ```bash
 python backend/app.py
@@ -100,7 +100,7 @@ http://127.0.0.1:5001
 
 Keep this terminal running.
 
-**Frontend Setup**
+## **Frontend Setup**
 
 Open a new terminal and navigate to the frontend directory:
 
@@ -124,7 +124,7 @@ The frontend will be available at:
 
 http://127.0.0.1:5173
 
-**Running the Application**
+## **Running the Application**
 
 To use the application:
 
@@ -147,7 +147,7 @@ npm run dev
 
 http://127.0.0.1:5173
 
-**Features**
+## **Features**
 
 1. Browse music catalog
 
