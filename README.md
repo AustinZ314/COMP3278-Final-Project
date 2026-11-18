@@ -153,7 +153,7 @@ http://127.0.0.1:5173
 
 ## **Features**
 
-### 1. Browse music catalog
+#### 1. Browse music catalog
 
 ### 2. Search songs and artists
 
