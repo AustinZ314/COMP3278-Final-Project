@@ -84,7 +84,7 @@ DB_USER=root
 DB_PASSWORD=YOUR_PASSWORD
 ```
 
-Replace ```bash YOUR_PASSWORD ``` with your MySQL password.
+Replace ```YOUR_PASSWORD``` with your MySQL password.
 
 ### 5. Test Database Connection
 
