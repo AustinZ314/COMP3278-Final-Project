@@ -72,7 +72,7 @@ pip install -r backend/requirements.txt
 
 ### 4. Configure Environment Variables
 
-Create a file named .env inside the backend folder.
+Create a file named ```.env``` inside the backend folder.
 
 _Example configuration:_
 
