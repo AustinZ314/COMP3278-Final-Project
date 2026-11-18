@@ -34,7 +34,7 @@ Enter the MySQL password when prompted.
 /usr/local/mysql/bin/mysql -u root -p music_streaming_db < insert_sample_data.sql
 ```
 
-After successful execution, the database music_streaming_db and its sample data will be created.
+After successful execution, the database ```music_streaming_db``` and its sample data will be created.
 
 ### 3. Verify Database Creation (Optional)
 
