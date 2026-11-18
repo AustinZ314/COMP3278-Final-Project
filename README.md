@@ -74,7 +74,7 @@ pip install -r backend/requirements.txt
 
 Create a file named .env inside the backend folder.
 
-Example configuration:
+_Example configuration:_
 
 ```bash
 DB_HOST=127.0.0.1
@@ -84,7 +84,7 @@ DB_USER=root
 DB_PASSWORD=YOUR_PASSWORD
 ```
 
-Replace YOUR_PASSWORD with your MySQL password.
+Replace ```bash YOUR_PASSWORD ``` with your MySQL password.
 
 ### 5. Test Database Connection
 
