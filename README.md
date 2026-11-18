@@ -9,12 +9,16 @@ A Spotify-inspired music library web application built using React (Vite), Flask
 Before running the project, ensure the following software is installed:
 
 MySQL 8.0+
+
 Python 3
-Node.js and npm
+
+Node.js 
+
+npm
 
 ## **Database Setup**
 
-### _1. Create the Database_
+### 1. Create the Database
 
 From the project root directory, run:
 
@@ -24,7 +28,7 @@ From the project root directory, run:
  
 Enter the MySQL password when prompted.
 
-### _2. Insert Sample Data_
+### 2. Insert Sample Data
 
 ```bash
 /usr/local/mysql/bin/mysql -u root -p music_streaming_db < insert_sample_data.sql
@@ -32,7 +36,7 @@ Enter the MySQL password when prompted.
 
 After successful execution, the database music_streaming_db and its sample data will be created.
 
-### _3. Verify Database Creation (Optional)_
+### 3. Verify Database Creation (Optional)
 
 ```bash
 /usr/local/mysql/bin/mysql -u root -p
@@ -48,25 +52,25 @@ SHOW TABLES;
 
 ## **Backend Setup**
 
-### _1. Create a Virtual Environment_
+### 1. Create a Virtual Environment
 
 ```bash
 python3 -m venv backend/.venv
 ```
 
-### _2. Activate the Virtual Environment_
+### 2. Activate the Virtual Environment
 
 ```bash
 source backend/.venv/bin/activate
 ```
 
-### _3. Install Required Packages_
+### 3. Install Required Packages
 
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-### _4. Configure Environment Variables_
+### 4. Configure Environment Variables
 
 Create a file named .env inside the backend folder.
 
@@ -82,13 +86,13 @@ DB_PASSWORD=YOUR_PASSWORD
 
 Replace YOUR_PASSWORD with your MySQL password.
 
-### _5. Test Database Connection_
+### 5. Test Database Connection
 
 ```bash
 python backend/test_connection.py
 ```
 
-### _6. Start the Backend Server_
+### 6. Start the Backend Server
 
 ```bash
 python backend/app.py
@@ -149,14 +153,14 @@ http://127.0.0.1:5173
 
 ## **Features**
 
-1. Browse music catalog
+### 1. Browse music catalog
 
-2. Search songs and artists
+### 2. Search songs and artists
 
-3. Like and unlike songs
+### 3. Like and unlike songs
 
-4. Create playlists
+### 4. Create playlists
 
-5. Add songs to playlists
+### 5. Add songs to playlists
 
-6. Store user interactions in MySQL
+### 6. Store user interactions in MySQL
