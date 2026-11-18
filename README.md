@@ -155,12 +155,12 @@ http://127.0.0.1:5173
 
 #### 1. Browse music catalog
 
-### 2. Search songs and artists
+#### 2. Search songs and artists
 
-### 3. Like and unlike songs
+#### 3. Like and unlike songs
 
-### 4. Create playlists
+#### 4. Create playlists
 
-### 5. Add songs to playlists
+#### 5. Add songs to playlists
 
-### 6. Store user interactions in MySQL
+#### 6. Store user interactions in MySQL
